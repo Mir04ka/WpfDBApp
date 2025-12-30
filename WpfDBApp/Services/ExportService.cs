@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Xml;
 using System.Xml.Serialization;
 using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
@@ -9,94 +10,146 @@ namespace WpfDBApp.Services;
 
 public class ExportService
 {
-    private const int ExcelRowLimit = 1_000_000; // Excel DOESN'T support more than ~1M rows
+    private const int ExcelRowLimit = 1_000_000; // Excel format limit
+    private readonly string _connectionString;   // DB connecting string
 
-    public async Task ExportExcelAsync(
-        string basePath,
-        IQueryable<Person> query,
-        List<string> fields)
+    public ExportService(string connectionString)
     {
-        var total = await query.CountAsync();
-        int fileIndex = 1;
+        _connectionString = connectionString;
+    }
 
-        for (int skip = 0; skip < total; skip += ExcelRowLimit)
+    public Task ExportExcelAsync(
+        string basePath,
+        Func<AppDbContext, IQueryable<Person>> queryFactory,
+        string[] fields,
+        IProgress<(long processed, long total)> progress)
+    {
+        return Task.Run(async () =>
         {
-            var data = await query
-                .AsNoTracking()
-                .Skip(skip)
-                .Take(ExcelRowLimit)
-                .ToListAsync();
+            if (fields == null || fields.Length == 0)
+                throw new ArgumentException("Fields required", nameof(fields));
 
-            var path = total > ExcelRowLimit
-                ? Path.Combine(
-                    Path.GetDirectoryName(basePath)!,
-                    $"{Path.GetFileNameWithoutExtension(basePath)}_{fileIndex}.xlsx")
-                : basePath;
+            await using var ctx = new AppDbContext(_connectionString);
+            var query = queryFactory(ctx);
 
-            using var wb = new XLWorkbook();
-            var ws = wb.Worksheets.Add("Export");
+            var total = await query.CountAsync();
+            long processed = 0;
+            int fileIndex = 1;
 
-            for (int c = 0; c < fields.Count; c++)
-                ws.Cell(1, c + 1).Value = fields[c];
+            progress.Report((0, total));
 
-            for (int r = 0; r < data.Count; r++)
+            for (int skip = 0; skip < total; skip += ExcelRowLimit)
             {
-                for (int c = 0; c < fields.Count; c++)
+                var chunk = await query
+                    .Skip(skip)
+                    .Take(ExcelRowLimit)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                string path = total > ExcelRowLimit
+                    ? Path.Combine(
+                        Path.GetDirectoryName(basePath) ?? ".",
+                        $"{Path.GetFileNameWithoutExtension(basePath)}_{fileIndex}.xlsx")
+                    : basePath;
+
+                using var wb = new XLWorkbook();
+                var ws = wb.Worksheets.Add("Export");
+
+                // header
+                for (int c = 0; c < fields.Length; c++)
+                    ws.Cell(1, c + 1).Value = fields[c];
+
+                for (int r = 0; r < chunk.Count; r++)
                 {
-                    ws.Cell(r + 2, c + 1).Value =
-                        typeof(Person)
-                            .GetProperty(fields[c])?
-                            .GetValue(data[r])?
-                            .ToString();
+                    var item = chunk[r];
+
+                    for (int c = 0; c < fields.Length; c++)
+                    {
+                        var prop = typeof(Person).GetProperty(fields[c]);
+                        ws.Cell(r + 2, c + 1)
+                            .SetValue(XLCellValue.FromObject(prop?.GetValue(item)));
+                    }
+
+                    processed++;
+
+                    if (processed % 1000 == 0)
+                        progress?.Report((processed, total));
                 }
+
+                wb.SaveAs(path);
+                fileIndex++;
             }
 
-            wb.SaveAs(path);
-            fileIndex++;
-        }
+            progress?.Report((total, total));
+        });
     }
-
-    public async Task ExportXmlAsync(string path, IQueryable<Person> query)
+    
+    public Task ExportXmlAsync(
+        string path,
+        Func<AppDbContext, IQueryable<Person>> queryFactory,
+        IProgress<(long processed, long total)> progress)
     {
-        var list = await query.AsNoTracking().ToListAsync();
-
-        var serializer = new XmlSerializer(typeof(TestProgram));
-        var data = new TestProgram
+        return Task.Run(async () =>
         {
-            Records = list.Select((p, i) => new Record
-            {
-                Id = i + 1,
-                Date = p.Date,
-                FirstName = p.FirstName,
-                LastName = p.LastName,
-                SurName = p.SurName,
-                City = p.City,
-                Country = p.Country
-            }).ToList()
-        };
+            await using var ctx = new AppDbContext(_connectionString);
+            var query = queryFactory(ctx).AsNoTracking();
 
-        using var fs = new FileStream(path, FileMode.Create);
-        serializer.Serialize(fs, data);
+            var total = await query.CountAsync();
+            long processed = 0;
+
+            progress.Report((0, total));
+
+            await using var fs = new FileStream(path, FileMode.Create);
+            using var writer = XmlWriter.Create(fs, new XmlWriterSettings
+            {
+                Indent = true,
+                Async = true
+            });
+
+            await writer.WriteStartDocumentAsync();
+            await writer.WriteStartElementAsync(null, "TestProgram", null);
+
+            await foreach (var p in query.AsAsyncEnumerable())
+            {
+                await writer.WriteStartElementAsync(null, "Record", null);
+                await writer.WriteAttributeStringAsync(null, "id", null, (++processed).ToString());
+
+                await writer.WriteElementStringAsync(null, "Date", null, p.Date.ToString("O"));
+                await writer.WriteElementStringAsync(null, "FirstName", null, p.FirstName);
+                await writer.WriteElementStringAsync(null, "LastName", null, p.LastName);
+                await writer.WriteElementStringAsync(null, "SurName", null, p.SurName);
+                await writer.WriteElementStringAsync(null, "City", null, p.City);
+                await writer.WriteElementStringAsync(null, "Country", null, p.Country);
+
+                await writer.WriteEndElementAsync();
+
+                if (processed % 500 == 0)
+                    progress?.Report((processed, total));
+            }
+
+            await writer.WriteEndElementAsync();
+            await writer.WriteEndDocumentAsync();
+
+            progress?.Report((total, total));
+        });
     }
 
-    // Building a root for XML export
     [XmlRoot("TestProgram")]
     public class TestProgram
     {
         [XmlElement("Record")]
-        public required List<Record> Records { get; set; }
+        public List<Record> Records { get; set; }
     }
 
-    // XML row record
     public class Record
     {
         [XmlAttribute("id")]
-        public required int Id { get; set; }
-        public required DateTime Date { get; set; }
-        public required string FirstName { get; set; }
-        public required string LastName { get; set; }
-        public required string SurName { get; set; }
-        public required string City { get; set; }
-        public required string Country { get; set; }
+        public int Id { get; set; }
+        public DateTime Date { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string SurName { get; set; }
+        public string City { get; set; }
+        public string Country { get; set; }
     }
 }

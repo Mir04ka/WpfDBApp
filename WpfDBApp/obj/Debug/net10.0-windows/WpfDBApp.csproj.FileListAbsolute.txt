@@ -74,3 +74,11 @@ C:\Users\mirka\RiderProjects\WpfDBApp\WpfDBApp\obj\Debug\net10.0-windows\WpfDBAp
 C:\Users\mirka\RiderProjects\WpfDBApp\WpfDBApp\obj\Debug\net10.0-windows\ref\WpfDBApp.dll
 C:\Users\mirka\RiderProjects\WpfDBApp\WpfDBApp\obj\Debug\net10.0-windows\MainWindow.baml
 C:\Users\mirka\RiderProjects\WpfDBApp\WpfDBApp\obj\Debug\net10.0-windows\MainWindow.g.cs
+C:\Users\mirka\RiderProjects\WpfDBApp\WpfDBApp\obj\Debug\net10.0-windows\WpfDBApp.sourcelink.json
+C:\Users\mirka\RiderProjects\WpfDBApp\WpfDBApp\bin\Debug\net10.0-windows\ControlzEx.dll
+C:\Users\mirka\RiderProjects\WpfDBApp\WpfDBApp\bin\Debug\net10.0-windows\MahApps.Metro.dll
+C:\Users\mirka\RiderProjects\WpfDBApp\WpfDBApp\bin\Debug\net10.0-windows\Microsoft.Xaml.Behaviors.dll
+C:\Users\mirka\RiderProjects\WpfDBApp\WpfDBApp\bin\Debug\net10.0-windows\de\MahApps.Metro.resources.dll
+C:\Users\mirka\RiderProjects\WpfDBApp\WpfDBApp\obj\Debug\net10.0-windows\App.baml
+C:\Users\mirka\RiderProjects\WpfDBApp\WpfDBApp\obj\Debug\net10.0-windows\GeneratedInternalTypeHelper.g.cs
+C:\Users\mirka\RiderProjects\WpfDBApp\WpfDBApp\obj\Debug\net10.0-windows\WpfDBApp_MarkupCompile.lref
