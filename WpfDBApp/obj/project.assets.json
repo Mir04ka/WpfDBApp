@@ -71,6 +71,25 @@
           }
         }
       },
+      "ControlzEx/7.0.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Xaml.Behaviors.Wpf": "1.1.135"
+        },
+        "compile": {
+          "lib/net8.0-windows7.0/ControlzEx.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows7.0/ControlzEx.dll": {
+            "related": ".xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.WindowsDesktop.App.WPF"
+        ]
+      },
       "DocumentFormat.OpenXml/3.1.1": {
         "type": "package",
         "dependencies": {
@@ -110,6 +129,30 @@
         "runtime": {
           "lib/netstandard2.0/ExcelNumberFormat.dll": {
             "related": ".xml"
+          }
+        }
+      },
+      "MahApps.Metro/3.0.0-rc0529": {
+        "type": "package",
+        "dependencies": {
+          "ControlzEx": "7.0.2"
+        },
+        "compile": {
+          "lib/net8.0-windows7.0/MahApps.Metro.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0-windows7.0/MahApps.Metro.dll": {
+            "related": ".xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.WindowsDesktop.App.WPF"
+        ],
+        "resource": {
+          "lib/net8.0-windows7.0/de/MahApps.Metro.resources.dll": {
+            "locale": "de"
           }
         }
       },
@@ -621,6 +664,22 @@
           }
         }
       },
+      "Microsoft.Xaml.Behaviors.Wpf/1.1.135": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0-windows7.0/Microsoft.Xaml.Behaviors.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0-windows7.0/Microsoft.Xaml.Behaviors.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.WindowsDesktop.App.WPF"
+        ]
+      },
       "RBush.Signed/4.0.0": {
         "type": "package",
         "compile": {
@@ -774,6 +833,24 @@
         "lib/netstandard2.1/ClosedXML.Parser.xml"
       ]
     },
+    "ControlzEx/7.0.2": {
+      "sha512": "PqQ/K4AnVjn64r52lvMrKDaJxdlF2AJJlRZCuF2NvXe6S420CDIFu7h3eHOzi2CeKsNU/qpI5qwut4WZ4RSrAg==",
+      "type": "package",
+      "path": "controlzex/7.0.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "controlzex.7.0.2.nupkg.sha512",
+        "controlzex.nuspec",
+        "lib/net462/ControlzEx.dll",
+        "lib/net462/ControlzEx.xml",
+        "lib/net6.0-windows7.0/ControlzEx.dll",
+        "lib/net6.0-windows7.0/ControlzEx.xml",
+        "lib/net8.0-windows7.0/ControlzEx.dll",
+        "lib/net8.0-windows7.0/ControlzEx.xml",
+        "logo-mini.png"
+      ]
+    },
     "DocumentFormat.OpenXml/3.1.1": {
       "sha512": "2z9QBzeTLNNKWM9SaOSDMegfQk/7hDuElOsmF77pKZMkFRP/GHA/W/4yOAQD9kn15N/FsFxHn3QVYkatuZghiA==",
       "type": "package",
@@ -838,6 +915,29 @@
         "lib/netstandard1.0/ExcelNumberFormat.xml",
         "lib/netstandard2.0/ExcelNumberFormat.dll",
         "lib/netstandard2.0/ExcelNumberFormat.xml"
+      ]
+    },
+    "MahApps.Metro/3.0.0-rc0529": {
+      "sha512": "3k5YxcSiBEuUJ//8I0nwHTBPAgiaZ3Jb78wdpsSVc+uXPSU4Xvv/D2uqXB6XOszO1X5XFubFNCzFniwbdE4TNg==",
+      "type": "package",
+      "path": "mahapps.metro/3.0.0-rc0529",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net462/MahApps.Metro.dll",
+        "lib/net462/MahApps.Metro.xml",
+        "lib/net462/de/MahApps.Metro.resources.dll",
+        "lib/net6.0-windows7.0/MahApps.Metro.dll",
+        "lib/net6.0-windows7.0/MahApps.Metro.xml",
+        "lib/net6.0-windows7.0/de/MahApps.Metro.resources.dll",
+        "lib/net8.0-windows7.0/MahApps.Metro.dll",
+        "lib/net8.0-windows7.0/MahApps.Metro.xml",
+        "lib/net8.0-windows7.0/de/MahApps.Metro.resources.dll",
+        "mahapps.metro.3.0.0-rc0529.nupkg.sha512",
+        "mahapps.metro.logo.png",
+        "mahapps.metro.nuspec",
+        "tools/VisualStudioToolsManifest.xml"
       ]
     },
     "Microsoft.Bcl.AsyncInterfaces/8.0.0": {
@@ -1580,6 +1680,28 @@
         "microsoft.sqlserver.server.nuspec"
       ]
     },
+    "Microsoft.Xaml.Behaviors.Wpf/1.1.135": {
+      "sha512": "r8qBEXmQfORso2+MVHnt8PSH4761zJ0SIxgQTSEDVLU97EN2FZdG6/ZCYUPhQy+OrPKgnpYBCAs3PS6Bs7wRsg==",
+      "type": "package",
+      "path": "microsoft.xaml.behaviors.wpf/1.1.135",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net462/Design/Microsoft.Xaml.Behaviors.Design.dll",
+        "lib/net462/Design/Microsoft.Xaml.Behaviors.DesignTools.dll",
+        "lib/net462/Microsoft.Xaml.Behaviors.dll",
+        "lib/net462/Microsoft.Xaml.Behaviors.pdb",
+        "lib/net462/Microsoft.Xaml.Behaviors.xml",
+        "lib/net6.0-windows7.0/Design/Microsoft.Xaml.Behaviors.DesignTools.dll",
+        "lib/net6.0-windows7.0/Microsoft.Xaml.Behaviors.dll",
+        "lib/net6.0-windows7.0/Microsoft.Xaml.Behaviors.pdb",
+        "lib/net6.0-windows7.0/Microsoft.Xaml.Behaviors.xml",
+        "microsoft.xaml.behaviors.wpf.1.1.135.nupkg.sha512",
+        "microsoft.xaml.behaviors.wpf.nuspec",
+        "tools/Install.ps1"
+      ]
+    },
     "RBush.Signed/4.0.0": {
       "sha512": "aP5KQxL5RnFNGW1f0euYVBfCatkLw5iEzMRJcXKq8LWWP4Cp3+qoSq1tDDL2vvJ2rM0ychmVMa2VaEKLS6uX4w==",
       "type": "package",
@@ -1692,6 +1814,7 @@
   "projectFileDependencyGroups": {
     "net10.0-windows7.0": [
       "ClosedXML >= 0.105.0",
+      "MahApps.Metro >= 3.0.0-rc0529",
       "Microsoft.EntityFrameworkCore >= 10.0.0",
       "Microsoft.EntityFrameworkCore.SqlServer >= 10.0.0"
     ]
@@ -1742,6 +1865,10 @@
           "ClosedXML": {
             "target": "Package",
             "version": "[0.105.0, )"
+          },
+          "MahApps.Metro": {
+            "target": "Package",
+            "version": "[3.0.0-rc0529, )"
           },
           "Microsoft.EntityFrameworkCore": {
             "target": "Package",

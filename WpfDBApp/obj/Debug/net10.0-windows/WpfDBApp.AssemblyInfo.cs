@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WpfDBApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a9594681d6a352ea964534c0e71de4ce9e8a7fd3")]
 [assembly: System.Reflection.AssemblyProductAttribute("WpfDBApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WpfDBApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
