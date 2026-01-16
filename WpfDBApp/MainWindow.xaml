@@ -5,7 +5,7 @@
                     Title="WPF DB app"
                     Height="720"
                     Width="1150"
-                    WindowStartupLocation="CenterScreen">
+                    WindowStartupLocation="CenterScreen"> 
 
     <Grid Margin="12">
         <Grid.RowDefinitions>

@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using Microsoft.EntityFrameworkCore;
 using WpfDBApp.Data;
+using WpfDBApp.Data.Repositories;
 using WpfDBApp.Models;
 using WpfDBApp.Services;
 using WpfDBApp.Helpers;
@@ -107,7 +108,7 @@ public class MainViewModel : ObservableObject
     private ExportService CreateExportService() => new ExportService(_connectionString);
 
     // Builds a query factory based on filters.
-    private Func<AppDbContext, IQueryable<Person>> BuildQueryFactory()
+    private Func<IQueryable<Person>, IQueryable<Person>> BuildQuery()
     {
         var df = DateFrom;
         var dt = DateTo;
@@ -117,9 +118,8 @@ public class MainViewModel : ObservableObject
         var city = CityFilter;
         var country = CountryFilter;
 
-        return ctx =>
+        return q =>
         {
-            var q = ctx.Persons.AsQueryable();
             if (df.HasValue) q = q.Where(p => p.Date >= df.Value);
             if (dt.HasValue) q = q.Where(p => p.Date <= dt.Value);
             if (!string.IsNullOrWhiteSpace(fn)) q = q.Where(p => p.FirstName == fn);
@@ -127,7 +127,8 @@ public class MainViewModel : ObservableObject
             if (!string.IsNullOrWhiteSpace(sn)) q = q.Where(p => p.SurName == sn);
             if (!string.IsNullOrWhiteSpace(city)) q = q.Where(p => p.City == city);
             if (!string.IsNullOrWhiteSpace(country)) q = q.Where(p => p.Country == country);
-            return q.AsNoTracking().OrderBy(p => p.Id);
+            
+            return q.OrderBy(p => p.Id);
         };
     }
 
@@ -206,11 +207,13 @@ public class MainViewModel : ObservableObject
     {
         Persons.Clear();
 
-        var factory = BuildQueryFactory();
-        await using var ctx = new AppDbContext(_connectionString);
-        var query = factory(ctx).Take(1000);
+        await using var repo = new RepositoryFactory(_connectionString);
+        
+        var query = BuildQuery();
 
-        await foreach (var item in query.AsAsyncEnumerable())
+        await foreach (var item in query(repo.Persons.Query())
+                           .Take(1000)
+                           .AsAsyncEnumerable())
         {
             await Application.Current.Dispatcher.InvokeAsync(() => Persons.Add(item));
         }
@@ -235,8 +238,8 @@ public class MainViewModel : ObservableObject
 
         try
         {
-            await using var ctx = new AppDbContext(_connectionString);
-            await ctx.Database.ExecuteSqlRawAsync("TRUNCATE TABLE Persons");
+            await using var repo = new RepositoryFactory(_connectionString);
+            await repo.Persons.ClearAsync();
             Persons.Clear();
         }
         catch (Exception ex)
@@ -266,7 +269,7 @@ public class MainViewModel : ObservableObject
 
         try
         {
-            var factory = BuildQueryFactory();
+            var query = BuildQuery();
             var exportService = CreateExportService();
             var fields = GetSelectedFields();
             
@@ -277,7 +280,7 @@ public class MainViewModel : ObservableObject
                     : 0;
             });
 
-            await exportService.ExportExcelAsync(fName, factory, fields, progress);
+            await exportService.ExportExcelAsync(fName, query, fields, progress);
         }
         catch (Exception ex)
         {
@@ -306,7 +309,7 @@ public class MainViewModel : ObservableObject
 
         try
         {
-            var factory = BuildQueryFactory();
+            var query = BuildQuery();
             var exportService = CreateExportService();
             
             var progress = new Progress<(long processed, long total)>(p =>
@@ -316,7 +319,7 @@ public class MainViewModel : ObservableObject
                     : 0;
             });
             
-            await exportService.ExportXmlAsync(fName, factory, progress);
+            await exportService.ExportXmlAsync(fName, query, progress);
         }
         catch (Exception ex)
         { 

@@ -4,6 +4,7 @@ using System.Xml.Serialization;
 using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
 using WpfDBApp.Data;
+using WpfDBApp.Data.Repositories;
 using WpfDBApp.Models;
 
 namespace WpfDBApp.Services;
@@ -20,7 +21,7 @@ public class ExportService
 
     public Task ExportExcelAsync(
         string basePath,
-        Func<AppDbContext, IQueryable<Person>> queryFactory,
+        Func<IQueryable<Person>, IQueryable<Person>> queryFactory,
         string[] fields,
         IProgress<(long processed, long total)> progress)
     {
@@ -29,8 +30,8 @@ public class ExportService
             if (fields == null || fields.Length == 0)
                 throw new ArgumentException("Fields required", nameof(fields));
 
-            await using var ctx = new AppDbContext(_connectionString);
-            var query = queryFactory(ctx);
+            await using var repo = new RepositoryFactory(_connectionString);
+            var query = queryFactory(repo.Persons.Query());
 
             var total = await query.CountAsync();
             long processed = 0;
@@ -86,13 +87,13 @@ public class ExportService
     
     public Task ExportXmlAsync(
         string path,
-        Func<AppDbContext, IQueryable<Person>> queryFactory,
+        Func<IQueryable<Person>, IQueryable<Person>> queryFactory,
         IProgress<(long processed, long total)> progress)
     {
         return Task.Run(async () =>
         {
-            await using var ctx = new AppDbContext(_connectionString);
-            var query = queryFactory(ctx).AsNoTracking();
+            await using var repo = new RepositoryFactory(_connectionString);
+            var query = queryFactory(repo.Persons.Query());
 
             var total = await query.CountAsync();
             long processed = 0;
